@@ -1,148 +1,188 @@
-# Advanced Expense Management System
+# Expense Management System
 
-A comprehensive expense management system with multi-currency support, OCR integration, and advanced approval workflows built with Next.js and JavaScript.
+A comprehensive expense management system with multi-currency support, OCR integration, and flexible approval workflows built with Next.js and JavaScript.
 
-## Core Features
+## 🚀 Core Features
 
 ### Authentication & User Management
-
-- **Role-based Access Control** - Admin, Manager, Employee roles with proper permissions
+- **Role-based Access Control** - Admin, Manager, Employee roles with granular permissions
 - **Company Auto-creation** - New companies created on first signup with country-specific currency
-- **Manager Relationships** - Assign employees to managers for approval workflows
-- **User Management** - Create, update, and manage user roles and relationships
+- **Manager Relationships** - Assign employees to managers for hierarchical approval workflows
+- **User Management** - Create, update, delete, and manage user roles and relationships
 
 ### Multi-Currency Support
-
-- **Global Currency Support** - Submit expenses in any currency
+- **Global Currency Support** - Submit expenses in any currency worldwide
 - **Real-time Conversion** - Automatic currency conversion to company's base currency
-- **Exchange Rate APIs** - Integration with currency conversion services
-- **Country-based Defaults** - Company currency set based on country selection
+- **Exchange Rate APIs** - Integration with ExchangeRate-API and RestCountries API
+- **Country-based Defaults** - Company currency automatically set based on country selection
 
-### Advanced Expense Submission
-
+### Expense Submission (Employee Role)
 - **OCR Receipt Scanning** - Upload receipt images for automatic expense extraction
 - **Auto-fill Forms** - OCR extracts amount, date, merchant, description, and category
 - **Multi-currency Forms** - Submit expenses in any supported currency
-- **Receipt Processing** - Smart receipt analysis with confidence scoring
+- **Expense History** - View approved and rejected expenses
 
-### Advanced Approval Workflows
-
-- **Multi-level Approvals** - Sequential approval chains (Manager → Finance → Director)
-- **Conditional Rules** - Percentage-based and specific approver rules
-- **Hybrid Approval** - Combine percentage and specific approver requirements
-- **Amount-based Rules** - Different approval flows based on expense amounts
+### Approval Workflow (Manager/Admin Role)
+- **Multi-level Sequential Approvals** - Step 1 → Manager, Step 2 → Finance, Step 3 → Director
+- **Approval Sequence Configuration** - Admins can define custom approval workflows
+- **Manager Approver Toggle** - Employees can control whether manager approval is required
 - **Approval Tracking** - Real-time approval status and step tracking
 
-### Approval Rule Types
-
+### Conditional Approval Flow
 - **Percentage Rules** - e.g., "60% of approvers must approve"
 - **Specific Approver Rules** - e.g., "CFO must approve"
 - **Hybrid Rules** - e.g., "60% OR CFO approves"
-- **Amount Thresholds** - Different rules for different expense amounts
+- **Combined Workflows** - Support for both multiple approvers and conditional rules together
 
-### Role Permissions
-
-- **Admin** - Full system access, user management, rule configuration, override approvals
-- **Manager** - Approve/reject expenses, view team expenses, manage approval workflows
-- **Employee** - Submit expenses, view own expenses, check approval status
-
-## Quick Start
+## 🛠️ Quick Start
 
 1. **Install dependencies:**
-
    ```bash
    npm install
    ```
 
 2. **Start development server:**
-
    ```bash
    npm run dev
    ```
 
 3. **Access the application:**
    - Open: http://localhost:3000
-   - Login with: admin@company.com / password123
+   - Login with demo credentials below
 
-## Demo Credentials
+## 🔐 Demo Credentials
 
 - **Admin:** admin@company.com / password123
 - **Manager:** manager@company.com / password123
 - **Employee:** employee@company.com / password123
 
-## API Endpoints
+## 📡 API Endpoints
 
 ### Authentication
-
-- `POST /api/auth/login` - User login
-- `POST /api/auth/signup` - User registration
+- `POST /api/auth/login` - User login with auto-company creation
+- `POST /api/auth/signup` - User registration with country-based currency
 
 ### Currency & Countries
-
-- `GET /api/currency?action=countries` - Get supported countries
-- `GET /api/currency?action=rates&base=USD` - Get exchange rates
-- `GET /api/currency?action=convert&amount=100&from=USD&to=EUR` - Convert currency
-
-### Expenses
-
-- `POST /api/expenses` - Submit new expense
-- `GET /api/expenses?userId=123&companyId=456` - Get user expenses
-
-### Approvals
-
-- `GET /api/approvals?approverId=123&companyId=456` - Get pending approvals
-- `POST /api/approvals` - Process approval/rejection
-
-### Approval Rules
-
-- `GET /api/approval-rules?companyId=456` - Get approval rules
-- `POST /api/approval-rules` - Create approval rule
-- `PUT /api/approval-rules` - Update approval rule
+- `GET /api/currency?action=countries` - Get supported countries and currencies
+- `GET /api/currency?action=rates&base=USD` - Get real-time exchange rates
+- `GET /api/currency?action=convert&amount=100&from=USD&to=EUR` - Convert currency amounts
 
 ### OCR Processing
+- `POST /api/ocr` - Process receipt image for expense extraction
+- `GET /api/ocr?userId=123` - Get OCR processing results
 
-- `POST /api/ocr` - Process receipt image
-- `GET /api/ocr?userId=123` - Get OCR results
+## 🏗️ Tech Stack
 
-### Users
-
-- `GET /api/users?companyId=456` - Get company users
-
-## Tech Stack
-
-- **Frontend:** Next.js 14, React, Tailwind CSS
+- **Frontend:** Next.js 14, React 18, Tailwind CSS
 - **Backend:** Next.js API Routes
-- **Database:** In-memory (for demo purposes)
-- **Authentication:** JWT tokens
+- **Database:** In-memory with localStorage persistence (demo purposes)
+- **Authentication:** JWT tokens with role-based access
 - **Currency APIs:** ExchangeRate-API, RestCountries API
-- **OCR:** Mock implementation (ready for Google Vision, AWS Textract, etc.)
+- **OCR:** Mock implementation (ready for Google Vision, AWS Textract, Azure Computer Vision)
+- **State Management:** React hooks and context
+- **UI Components:** Custom components with Tailwind CSS
 
-## Project Structure
+## 📁 Project Structure
 
 ```
-├── app/                    # Next.js app directory
-│   ├── api/auth/          # Authentication endpoints
-│   ├── dashboard/         # Main dashboard page
-│   └── page.jsx          # Login/signup page
-├── components/            # React components
-│   ├── Header.jsx        # Navigation header
-│   ├── Sidebar.jsx       # Navigation sidebar
-│   ├── ExpenseForm.jsx   # Expense submission form
-│   ├── ExpenseList.jsx   # Expense listing
-│   ├── ApprovalList.jsx  # Approval management
-│   ├── UserManagement.jsx # User management
-│   └── ApprovalRules.jsx # Approval rules
-└── lib/                  # Utility libraries
-    ├── db.js            # Database operations
-    └── auth.js         # Authentication utilities
+├── app/                           # Next.js app directory
+│   ├── api/                       # API endpoints
+│   │   ├── auth/                  # Authentication endpoints
+│   │   │   ├── login/route.js     # Login endpoint
+│   │   │   └── signup/route.js    # Signup endpoint
+│   │   ├── currency/route.js      # Currency conversion API
+│   │   └── ocr/route.js           # OCR processing API
+│   ├── dashboard/                 # Main dashboard page
+│   │   └── page.jsx               # Dashboard component
+│   ├── globals.css                # Global styles
+│   ├── layout.jsx                 # Root layout
+│   └── page.jsx                   # Login/signup page
+├── components/                    # React components
+│   ├── Header.jsx                 # Navigation header
+│   ├── Sidebar.jsx                # Navigation sidebar
+│   ├── ExpenseForm.jsx            # Expense submission form with OCR
+│   ├── ExpenseList.jsx            # Expense listing and management
+│   ├── ApprovalList.jsx           # Approval management
+│   ├── ApprovalRules.jsx          # Approval rules management
+│   ├── ApprovalSequenceConfig.jsx # Approval sequence configuration
+│   ├── UserManagement.jsx         # User management interface
+│   └── UserRoleSwitcher.jsx       # Role switching component
+├── lib/                           # Utility libraries
+│   ├── db-light.js                # Lightweight database operations
+│   ├── auth.js                    # Authentication utilities
+│   └── currency.js                # Currency conversion utilities
+├── package.json                   # Dependencies and scripts
+├── next.config.js                 # Next.js configuration
+├── tailwind.config.js             # Tailwind CSS configuration
+└── postcss.config.js              # PostCSS configuration
 ```
 
-## Key Features Demonstrated
+## ✨ Key Features Demonstrated
 
-1. **Role-Based Access Control** - Different views for Admin/Manager/Employee
-2. **Expense Workflow** - Submit → Approve → Track
-3. **User Management** - Create users and assign roles
-4. **Approval Rules** - Configure approval requirements
-5. **Clean UI** - Modern, responsive design
+### 1. **Complete Approval Workflow System**
+- Multi-level sequential approvals (Manager → Finance → Director)
+- Custom approval sequence configuration
+- Conditional approval rules (percentage, specific approver, hybrid)
+- Manager approver toggle control
 
-Perfect for demonstrating expense management concepts and modern web development practices!
+### 2. **Advanced Expense Management**
+- OCR receipt scanning with auto-fill
+- Multi-currency support with real-time conversion
+- Manager approval requirement toggle
+- Comprehensive expense tracking and history
+
+### 3. **Enterprise-Grade User Management**
+- Role-based access control (Admin, Manager, Employee)
+- Manager-employee relationship management
+- User creation and role assignment
+- Company auto-creation with country-based currency
+
+### 4. **Flexible Approval Configuration**
+- Create, edit, and delete approval rules
+- Configure custom approval sequences
+- Set amount-based approval thresholds
+- Define percentage and specific approver requirements
+
+## 🎯 Use Cases
+
+- **Small to Medium Businesses** - Complete expense management solution
+- **Enterprise Organizations** - Complex approval workflows and multi-currency support
+- **Remote Teams** - OCR receipt processing and digital workflows
+- **International Companies** - Multi-currency support and country-based settings
+- **Compliance-focused Organizations** - Detailed approval tracking and audit trails
+
+## 🔧 Configuration
+
+### Setting Up Approval Sequences
+1. Login as Admin
+2. Navigate to "Approval Sequences"
+3. Create custom workflows (e.g., Manager → Finance → Director)
+4. Assign specific users to each step
+5. Mark steps as required or optional
+
+### Configuring Approval Rules
+1. Go to "Approval Rules"
+2. Create rules based on amount thresholds
+3. Set percentage requirements or specific approvers
+4. Configure auto-approval for low-value expenses
+
+### Managing Users and Roles
+1. Access "Manage Users"
+2. Create employees and assign managers
+3. Set appropriate roles (Admin, Manager, Employee)
+4. Configure manager-employee relationships
+
+## 🚀 Getting Started
+
+1. **Clone the repository**
+2. **Install dependencies:** `npm install`
+3. **Start development server:** `npm run dev`
+4. **Access application:** http://localhost:3000
+5. **Login with demo credentials**
+6. **Explore all features and workflows**
+
+Perfect for demonstrating modern expense management concepts, enterprise workflow design, and full-stack web development practices!
+
+## 📄 License
+
+This project is for demonstration purposes. Feel free to use and modify as needed.
