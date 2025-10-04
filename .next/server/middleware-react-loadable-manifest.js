@@ -1,0 +1,1 @@
+self.__REACT_LOADABLE_MANIFEST="{\"components\\\\ExpenseForm.jsx -> ../lib/db-light.js\":{\"id\":\"components\\\\ExpenseForm.jsx -> ../lib/db-light.js\",\"files\":[]},\"components\\\\ExpenseForm.jsx -> uuid\":{\"id\":\"components\\\\ExpenseForm.jsx -> uuid\",\"files\":[\"static/chunks/vendor.js\"]}}"
