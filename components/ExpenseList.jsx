@@ -1,13 +1,18 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+<<<<<<< HEAD
 import { db } from '../lib/db-light.js';
+=======
+import { db } from '../lib/db.js';
+>>>>>>> 12b7366e64d70471407f75f35d1fb0bac42f6b48
 
 export default function ExpenseList({ user, company }) {
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+<<<<<<< HEAD
     const loadExpenses = async () => {
       try {
         let userExpenses = [];
@@ -27,6 +32,19 @@ export default function ExpenseList({ user, company }) {
     };
 
     loadExpenses();
+=======
+    // Load expenses based on user role
+    let userExpenses = [];
+    
+    if (user.role === 'admin') {
+      userExpenses = db.getExpensesByCompany(company.id);
+    } else {
+      userExpenses = db.getExpensesByUser(user.id);
+    }
+    
+    setExpenses(userExpenses);
+    setLoading(false);
+>>>>>>> 12b7366e64d70471407f75f35d1fb0bac42f6b48
   }, [user, company]);
 
   const getStatusColor = (status) => {

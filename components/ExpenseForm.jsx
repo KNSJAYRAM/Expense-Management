@@ -1,11 +1,17 @@
 'use client';
 
+<<<<<<< HEAD
 import React, { useState, useEffect } from 'react';
+=======
+import React, { useState } from 'react';
+import { db } from '../lib/db.js';
+>>>>>>> 12b7366e64d70471407f75f35d1fb0bac42f6b48
 import { v4 as uuidv4 } from 'uuid';
 
 export default function ExpenseForm({ user, company }) {
   const [formData, setFormData] = useState({
     amount: '',
+<<<<<<< HEAD
     currency: company.currency || 'USD',
     category: '',
     description: '',
@@ -19,6 +25,14 @@ export default function ExpenseForm({ user, company }) {
   const [convertedAmount, setConvertedAmount] = useState(null);
   const [ocrLoading, setOcrLoading] = useState(false);
   const [receiptImage, setReceiptImage] = useState(null);
+=======
+    category: '',
+    description: '',
+    date: new Date().toISOString().split('T')[0],
+  });
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+>>>>>>> 12b7366e64d70471407f75f35d1fb0bac42f6b48
 
   const categories = [
     'Meals & Entertainment',
@@ -29,6 +43,7 @@ export default function ExpenseForm({ user, company }) {
     'Other'
   ];
 
+<<<<<<< HEAD
   // Load currencies on component mount
   useEffect(() => {
     const loadCurrencies = async () => {
@@ -123,16 +138,24 @@ export default function ExpenseForm({ user, company }) {
     }
   };
 
+=======
+>>>>>>> 12b7366e64d70471407f75f35d1fb0bac42f6b48
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
+<<<<<<< HEAD
       const { v4: uuidv4 } = await import('uuid');
+=======
+      // Auto-approve admin expenses, others need approval
+      const initialStatus = user.role === 'admin' ? 'approved' : 'pending';
+>>>>>>> 12b7366e64d70471407f75f35d1fb0bac42f6b48
       
       const expense = {
         id: uuidv4(),
         userId: user.id,
+<<<<<<< HEAD
         amount: parseFloat(formData.amount),
         currency: formData.currency,
         description: formData.description,
@@ -240,11 +263,70 @@ export default function ExpenseForm({ user, company }) {
       });
       setConvertedAmount(null);
       setReceiptImage(null);
+=======
+        companyId: user.companyId,
+        amount: parseFloat(formData.amount),
+        currency: 'USD',
+        category: formData.category,
+        description: formData.description,
+        date: new Date(formData.date),
+        status: initialStatus,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      db.createExpense(expense);
+      
+      // If admin expense, create auto-approval record
+      if (user.role === 'admin') {
+        const approval = {
+          id: uuidv4(),
+          expenseId: expense.id,
+          approverId: user.id,
+          status: 'approved',
+          comment: 'Auto-approved (Admin)',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+        db.createApproval(approval);
+      } else {
+        // Create approval workflow for non-admin users
+        const approvalChain = [];
+        
+        // Add manager to approval chain if user has a manager
+        const manager = db.getManager(user.id);
+        if (manager) {
+          approvalChain.push(manager.id);
+        }
+        
+        // Add admin as final approver
+        const admins = db.getUsersByCompany(user.companyId).filter(u => u.role === 'admin');
+        if (admins.length > 0) {
+          approvalChain.push(admins[0].id);
+        }
+        
+        // Create the approval workflow
+        if (approvalChain.length > 0) {
+          db.createApprovalWorkflow(expense.id, approvalChain);
+        }
+      }
+      
+      setSuccess(true);
+      setFormData({
+        amount: '',
+        category: '',
+        description: '',
+        date: new Date().toISOString().split('T')[0],
+      });
+>>>>>>> 12b7366e64d70471407f75f35d1fb0bac42f6b48
 
       setTimeout(() => setSuccess(false), 3000);
     } catch (error) {
       console.error('Error submitting expense:', error);
+<<<<<<< HEAD
       alert('An error occurred while submitting the expense');
+=======
+>>>>>>> 12b7366e64d70471407f75f35d1fb0bac42f6b48
     } finally {
       setLoading(false);
     }
@@ -265,9 +347,13 @@ export default function ExpenseForm({ user, company }) {
               <p className="mt-1 text-sm text-green-700">
                 {user.role === 'admin' 
                   ? 'Your expense has been automatically approved.' 
+<<<<<<< HEAD
                   : needsApproval 
                     ? 'Your expense has been submitted and is waiting for approval.'
                     : 'Your expense has been automatically approved based on company rules.'
+=======
+                  : 'Your expense has been submitted and is waiting for approval.'
+>>>>>>> 12b7366e64d70471407f75f35d1fb0bac42f6b48
                 }
               </p>
             </div>
@@ -278,6 +364,7 @@ export default function ExpenseForm({ user, company }) {
   }
 
   return (
+<<<<<<< HEAD
     <div className="max-w-2xl mx-auto animate-fadeIn">
       <div className="card-elevated hover-lift">
         <div className="px-4 py-5 sm:p-6">
@@ -360,6 +447,32 @@ export default function ExpenseForm({ user, company }) {
               </div>
             )}
 
+=======
+    <div className="max-w-2xl mx-auto">
+      <div className="bg-white shadow rounded-lg">
+        <div className="px-4 py-5 sm:p-6">
+          <h3 className="text-lg leading-6 font-medium text-gray-900 mb-6">
+            Submit New Expense
+          </h3>
+          
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label htmlFor="amount" className="block text-sm font-medium text-gray-700">
+                Amount (USD) *
+              </label>
+              <input
+                type="number"
+                step="0.01"
+                id="amount"
+                required
+                value={formData.amount}
+                onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                placeholder="0.00"
+              />
+            </div>
+
+>>>>>>> 12b7366e64d70471407f75f35d1fb0bac42f6b48
             <div>
               <label htmlFor="category" className="block text-sm font-medium text-gray-700">
                 Category *
@@ -408,6 +521,7 @@ export default function ExpenseForm({ user, company }) {
               />
             </div>
 
+<<<<<<< HEAD
             {/* Manager Approval Toggle */}
             {user.role === 'employee' && user.managerId && (
               <div className="flex items-center">
@@ -442,6 +556,15 @@ export default function ExpenseForm({ user, company }) {
                     <span className="ml-2">✨</span>
                   </span>
                 )}
+=======
+            <div className="flex justify-end">
+              <button
+                type="submit"
+                disabled={loading}
+                className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+              >
+                {loading ? 'Submitting...' : 'Submit Expense'}
+>>>>>>> 12b7366e64d70471407f75f35d1fb0bac42f6b48
               </button>
             </div>
           </form>

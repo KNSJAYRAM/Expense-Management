@@ -1,8 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+<<<<<<< HEAD
 import { v4 as uuidv4 } from 'uuid';
 import { db } from '../lib/db-light.js';
+=======
+import { db } from '../lib/db.js';
+import { v4 as uuidv4 } from 'uuid';
+>>>>>>> 12b7366e64d70471407f75f35d1fb0bac42f6b48
 
 export default function UserManagement({ user, company }) {
   const [users, setUsers] = useState([]);
@@ -16,6 +21,7 @@ export default function UserManagement({ user, company }) {
   });
 
   useEffect(() => {
+<<<<<<< HEAD
     const loadUsers = async () => {
       try {
         const companyUsers = await db.getUsersByCompany(company.id);
@@ -28,6 +34,11 @@ export default function UserManagement({ user, company }) {
     };
 
     loadUsers();
+=======
+    const companyUsers = db.getUsersByCompany(company.id);
+    setUsers(companyUsers);
+    setLoading(false);
+>>>>>>> 12b7366e64d70471407f75f35d1fb0bac42f6b48
   }, [company.id]);
 
   const handleSubmit = async (e) => {
@@ -45,10 +56,17 @@ export default function UserManagement({ user, company }) {
         updatedAt: new Date(),
       };
 
+<<<<<<< HEAD
       await db.createUser(newUser);
       
       // Refresh users list
       const updatedUsers = await db.getUsersByCompany(company.id);
+=======
+      db.createUser(newUser);
+      
+      // Refresh users list
+      const updatedUsers = db.getUsersByCompany(company.id);
+>>>>>>> 12b7366e64d70471407f75f35d1fb0bac42f6b48
       setUsers(updatedUsers);
       
       // Reset form
@@ -64,6 +82,7 @@ export default function UserManagement({ user, company }) {
     }
   };
 
+<<<<<<< HEAD
   const handleRoleChange = async (userId, newRole) => {
     try {
       const updatedUser = await db.updateUser(userId, { role: newRole });
@@ -73,6 +92,13 @@ export default function UserManagement({ user, company }) {
       }
     } catch (error) {
       console.error('Error updating user role:', error);
+=======
+  const handleRoleChange = (userId, newRole) => {
+    const updatedUser = db.updateUser(userId, { role: newRole });
+    if (updatedUser) {
+      const updatedUsers = db.getUsersByCompany(company.id);
+      setUsers(updatedUsers);
+>>>>>>> 12b7366e64d70471407f75f35d1fb0bac42f6b48
     }
   };
 
