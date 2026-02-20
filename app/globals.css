@@ -1,0 +1,10 @@
+@import './styles/base.css';
+
+/* Import utility classes */
+@import './styles/utilities.css';
+
+/* Import component styles */
+@import './styles/components.css';
+
+/* Import animations last */
+@import './styles/animations.css';
