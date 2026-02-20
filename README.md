@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Expense Management System
 
 A comprehensive expense management system with multi-currency support, OCR integration, and flexible approval workflows built with Next.js and JavaScript.
