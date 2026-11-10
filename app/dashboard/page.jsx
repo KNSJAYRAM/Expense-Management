@@ -5,11 +5,10 @@ import { useRouter } from "next/navigation";
 import Sidebar from "../../components/Sidebar";
 import Header from "../../components/Header";
 import ExpenseForm from "../../components/ExpenseForm";
-import ExpenseList from "../../components/ExpenseList";
 import ApprovalList from "../../components/ApprovalList";
 import UserManagement from "../../components/UserManagement";
 import ApprovalRules from "../../components/ApprovalRules";
-import ApprovalSequenceConfig from "../../components/ApprovalSequenceConfig";
+import ExpenseList from "../../components/ExpenseList";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -71,8 +70,10 @@ export default function Dashboard() {
     return null;
   }
 
+  const tab = user.role === "admin" && ["expenses", "submit"].includes(activeTab) ? "approvals" : activeTab;
+
   const renderContent = () => {
-    switch (activeTab) {
+    switch (tab) {
       case "expenses":
         return <ExpenseList user={user} company={company} />;
       case "submit":
@@ -83,8 +84,6 @@ export default function Dashboard() {
         return <UserManagement user={user} company={company} />;
       case "rules":
         return <ApprovalRules user={user} company={company} />;
-      case "sequences":
-        return <ApprovalSequenceConfig user={user} company={company} />;
       default:
         return <ExpenseList user={user} company={company} />;
     }
@@ -95,7 +94,7 @@ export default function Dashboard() {
       <Header user={user} company={company} />
       <div className="flex">
         <Sidebar
-          activeTab={activeTab}
+          activeTab={tab}
           setActiveTab={setActiveTab}
           userRole={user.role}
         />

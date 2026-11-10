@@ -24,7 +24,6 @@ A comprehensive expense management system with multi-currency support, OCR integ
 
 ### Approval Workflow (Manager/Admin Role)
 - **Multi-level Sequential Approvals** - Step 1 → Manager, Step 2 → Finance, Step 3 → Director
-- **Approval Sequence Configuration** - Admins can define custom approval workflows
 - **Manager Approver Toggle** - Employees can control whether manager approval is required
 - **Approval Tracking** - Real-time approval status and step tracking
 
@@ -68,25 +67,23 @@ A comprehensive expense management system with multi-currency support, OCR integ
 - `GET /api/currency?action=convert&amount=100&from=USD&to=EUR` - Convert currency amounts
 
 ### OCR Processing
-- `POST /api/ocr` - Process receipt image for expense extraction
-- `GET /api/ocr?userId=123` - Get OCR processing results
+- `POST /api/ocr` - Process receipt image for expense extraction (mock)
 
 ##  Tech Stack
 
-- **Frontend:** Next.js 14, React 18, Tailwind CSS
+- **Frontend:** Next.js 14, React 18, plain CSS
 - **Backend:** Next.js API Routes
 - **Database:** In-memory with localStorage persistence (demo purposes)
 - **Authentication:** JWT tokens with role-based access
 - **Currency APIs:** ExchangeRate-API, RestCountries API
 - **OCR:** Mock implementation (ready for Google Vision, AWS Textract, Azure Computer Vision)
 - **State Management:** React hooks and context
-- **UI Components:** Custom components with Tailwind CSS
+- **UI Components:** Custom React components
 
 ##  Key Features Demonstrated
 
 ### 1. **Complete Approval Workflow System**
 - Multi-level sequential approvals (Manager → Finance → Director)
-- Custom approval sequence configuration
 - Conditional approval rules (percentage, specific approver, hybrid)
 - Manager approver toggle control
 
@@ -104,7 +101,6 @@ A comprehensive expense management system with multi-currency support, OCR integ
 
 ### 4. **Flexible Approval Configuration**
 - Create, edit, and delete approval rules
-- Configure custom approval sequences
 - Set amount-based approval thresholds
 - Define percentage and specific approver requirements
 
@@ -118,12 +114,8 @@ A comprehensive expense management system with multi-currency support, OCR integ
 
 ##  Configuration
 
-### Setting Up Approval Sequences
-1. Login as Admin
-2. Navigate to "Approval Sequences"
-3. Create custom workflows (e.g., Manager → Finance → Director)
-4. Assign specific users to each step
-5. Mark steps as required or optional
+### Approval Flow
+Employee expenses go to their manager, manager expenses go to an admin. Admins approve, but don't submit expenses.
 
 ### Configuring Approval Rules
 1. Go to "Approval Rules"

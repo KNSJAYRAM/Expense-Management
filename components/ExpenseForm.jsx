@@ -10,7 +10,6 @@ export default function ExpenseForm({ user, company }) {
     category: '',
     description: '',
     date: new Date().toISOString().split('T')[0],
-    requireManagerApproval: true,
   });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -122,55 +121,28 @@ export default function ExpenseForm({ user, company }) {
         date: formData.date,
         companyId: user.companyId,
         companyCurrency: company.currency,
-        status: user.role === 'admin' ? 'approved' : 'pending',
+        status: 'pending',
         createdAt: new Date(),
         updatedAt: new Date()
       };
 
-      let approvalNeeded = true;
-      if (user.role !== 'admin') {
-        const approvalRules = await db.getApprovalRulesByCompany(user.companyId);
-        const applicableRules = approvalRules.filter(
-          (rule) => rule.minAmount <= expense.amount && rule.maxAmount >= expense.amount
-        );
-        for (const rule of applicableRules) {
-          if (rule.percentage === 0 && (!rule.approverIds || rule.approverIds.length === 0) && !rule.specificApproverId) {
-            approvalNeeded = false;
-            break;
-          }
-          if (rule.specificApproverId === user.id) {
-            approvalNeeded = false;
-            break;
-          }
-        }
-        setNeedsApproval(approvalNeeded);
-        if (approvalNeeded) {
-          const approvalSequences = await db.getApprovalSequencesByCompany(user.companyId);
-          const matchingSequence = approvalSequences.find(s => s.steps && s.steps.length > 0);
-          let approvers = [];
-          if (matchingSequence) {
-            approvers = (matchingSequence.steps || []).map(step => step.userId).filter(Boolean);
-            expense.approvalSequenceId = matchingSequence.id;
-          } else {
-            const companyUsers = await db.getUsersByCompany(user.companyId);
-            if (formData.requireManagerApproval && user.managerId) approvers.push(user.managerId);
-            const admins = companyUsers.filter(u => u.role === 'admin' && u.id !== user.id);
-            if (admins.length > 0 && !approvers.includes(admins[0].id)) approvers.push(admins[0].id);
-            if (approvers.length === 0) {
-              const managers = companyUsers.filter(u => u.role === 'manager' && u.id !== user.id);
-              if (managers.length > 0) approvers.push(managers[0].id);
-            }
-          }
-          if (approvers.length > 0) {
-            expense.approvalChain = approvers;
-            expense.currentApprovalStep = 0;
-            expense.requireManagerApproval = formData.requireManagerApproval;
-          }
-        } else {
-          expense.status = 'approved';
-        }
+      // Fixed hierarchy: employee -> manager, manager -> admin, admin -> auto-approved
+      const companyUsers = await db.getUsersByCompany(user.companyId);
+      const firstOf = (role) => companyUsers.find((u) => u.role === role && u.id !== user.id);
+      let approver = null;
+      if (user.role === 'employee') {
+        approver = companyUsers.find((u) => u.id === user.managerId) || firstOf('manager') || firstOf('admin');
+      } else if (user.role === 'manager') {
+        approver = firstOf('admin');
       }
-      await db.createExpense(expense);
+      const approvalNeeded = Boolean(approver);
+      setNeedsApproval(approvalNeeded);
+      if (approvalNeeded) {
+        expense.approvalChain = [approver.id];
+        expense.currentApprovalStep = 0;
+      } else {
+        expense.status = 'approved';
+      }      await db.createExpense(expense);
       setSuccess(true);
       setFormData({
         amount: '',
@@ -178,8 +150,7 @@ export default function ExpenseForm({ user, company }) {
         category: '',
         description: '',
         date: new Date().toISOString().split('T')[0],
-        requireManagerApproval: true,
-      });
+          });
       setConvertedAmount(null);
       setReceiptImage(null);
       setTimeout(() => setSuccess(false), 3000);
@@ -201,11 +172,9 @@ export default function ExpenseForm({ user, company }) {
           <div className="ml-3">
             <h3 className="text-sm font-medium text-green-800">Expense Submitted Successfully!</h3>
             <p className="mt-1 text-sm text-green-700">
-              {user.role === 'admin'
-                ? 'Your expense has been automatically approved.'
-                : needsApproval
-                  ? 'Your expense has been submitted and is waiting for approval.'
-                  : 'Your expense has been automatically approved based on company rules.'}
+              {needsApproval
+                ? 'Your expense has been submitted and is waiting for approval.'
+                : 'Your expense has been automatically approved.'}
             </p>
           </div>
         </div>
@@ -313,20 +282,6 @@ export default function ExpenseForm({ user, company }) {
                 className="mt-1"
               />
             </div>
-
-            {user.role === 'employee' && user.managerId && (
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="requireManagerApproval"
-                  checked={formData.requireManagerApproval}
-                  onChange={(e) => setFormData({ ...formData, requireManagerApproval: e.target.checked })}
-                />
-                <label htmlFor="requireManagerApproval" className="ml-2 block text-sm text-gray-700">
-                  Require Manager Approval
-                </label>
-              </div>
-            )}
 
             <div className="flex justify-center">
               <button
